@@ -19,15 +19,16 @@
                     <div class="card-body">
                         <form action="">
                             @csrf
-
+                            <label for="">Select Country</label>
                             <select name="" id="country_id" class="form-control my-3">
                                 <option value="">Select Country</option>
                                 @foreach ($countries as $country)
                                     <option value="{{ $country->id }}">{{ $country->name }}</option>
                                 @endforeach
                             </select>
-
+                            <label for="">Select State</label>
                             <select  id="state_id" class="form-control my-2"></select>
+                            <label for="">Select City</label>
                             <select  id="city_id" class="form-control my-2"></select>
 
                         </form>
@@ -56,47 +57,40 @@
             $('#country_id').on('change', function(){
                 var country_id = $(this).val();
                 $('#state_id').html(' ');
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ url('/fetchstate') }}",
+                        data: { country_id:country_id },
+                        dataType: "json",
+                        success: function (response) {
 
-                $.ajax({
-                    type: "POST",
-                    url: "{{ url('/fetchstate') }}",
-                    data: { country_id:country_id },
-                    dataType: "json",
-                    success: function (response) {
-
-                        $('#state_id').html('<option value="">Select state</option>');
-                        $.each(response, function (index, val) {
-                            $('#state_id').append('<option value="'+val.id+'">'+val.name+'</option>');
-                        });
-                        $('#city_id').html('<option value="">Select city</option>');
-                    }
-                });
-
-            });
-
+                            $('#state_id').html('<option value="">Select state</option>');
+                            response.forEach((val, i) => {
+                                $('#state_id').append(`<option value="${val.id}">${val.name}</option>`);
+                            });
+                            $('#city_id').html('<option value="">Select city</option>');
+                        }
+                    });
+                 });
 
             $('#state_id').on('change', function(){
                 var state_id = $(this).val();
                 $('#city_id').html(' ');
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ url('/fetchcity') }}",
+                        data: { state_id:state_id },
+                        dataType: "json",
+                        success: function (response) {
 
-                $.ajax({
-                    type: "POST",
-                    url: "{{ url('/fetchcity') }}",
-                    data: { state_id:state_id },
-                    dataType: "json",
-                    success: function (response) {
-
-                        $('#city_id').html('<option value="">Select state</option>');
-                        $.each(response, function (index, val) {
-                            $('#city_id').append('<option value="'+val.id+'">'+val.name+'</option>');
-                        });
-
-                    }
-                });
-
-            });
-
-        });
+                            $('#city_id').html('<option value="">Select City</option>');
+                            response.forEach( (val, i) => {
+                                $('#city_id').append(`<option value="${val.id}">${val.name}</option>`);
+                            });
+                        }
+                    });
+                  });
+              });
 </script>
 
 </body>
